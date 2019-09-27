@@ -1,0 +1,16 @@
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+.Trashes
+
+# Dependency directories
+node_modules/
+jspm_packages/
+.npm
+
+# Logs
+logs
+*.log
+npm-debug.log*
