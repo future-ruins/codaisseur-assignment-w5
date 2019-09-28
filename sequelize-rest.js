@@ -31,7 +31,7 @@ const Movie = db.define(
   { timestamps: false }
 );
 
-db.sync({ force: true })
+db.sync({ force: false })
   .then(() => console.log('Tables updated successfully'))
   .then(() =>
     //     //     Promise.all([
@@ -136,7 +136,6 @@ app.post('/movies', (request, response) =>
 );
 
 // Read a single movie resource
-
 app.get('/movies/:id', (request, response, next) => {
   Movie.findByPk(request.params.id)
     //.then(console.log('request.params.id', request.params.id))
@@ -171,3 +170,16 @@ app.delete('/movies/:id', (request, response, next) => {
 });
 
 // Update a single movie resource
+app.put('/movies/:id', (request, response, next) => {
+  Movie.findByPk(parseInt(request.params.id))
+    .then(movie => {
+      if (movie) {
+        return movie.update(request.body).then(movie => {
+          return response.json(movie);
+        });
+      } else {
+        return response.status(404).send({ message: 'Movie not found' });
+      }
+    })
+    .catch(error => next(error));
+});
