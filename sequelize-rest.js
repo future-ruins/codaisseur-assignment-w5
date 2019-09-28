@@ -1,11 +1,9 @@
-//Imports
-
+//Require libraries
 const Sequelize = require('sequelize');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-// Sequelize and db models set-up
-
+// DB and models set-up
 const connectionString =
   process.env.DATABASE_URL ||
   'postgresql://postgres:password@localhost:5432/postgres';
@@ -21,11 +19,9 @@ const Movie = db.define(
     },
     yearOfRelease: {
       type: Sequelize.INTEGER,
-      //allowNull: false,
     },
     synopsis: {
       type: Sequelize.STRING,
-      //allowNull: false,
     },
   },
   { timestamps: false }
@@ -34,59 +30,33 @@ const Movie = db.define(
 db.sync({ force: false })
   .then(() => console.log('Tables updated successfully'))
   .then(() =>
-    //     //     Promise.all([
-    //     //       Movie.create({
-    //     //         title: 'Apocalypse Now',
-    //     //         yearOfRelease: 1979,
-    //     //         synopsis:
-    //     //           'A U.S. Army officer serving in Vietnam is tasked with assassinating a renegade Special Forces Colonel who sees himself as a god.',
-    //     //       }),
-    //     //       Movie.create({
-    //     //         title: 'Blade Runner',
-    //     //         yearOfRelease: 1982,
-    //     //         synopsis:
-    //     //           'A blade runner must pursue and terminate four replicants who stole a ship in space, and have returned to Earth to find their creator.',
-    //     //       }),
-    //     //       Movie.create({
-    //     //         title: 'Metropolis',
-    //     //         yearOfRelease: 1927,
-    //     //         synopsis:
-    //     //           "In a futuristic city sharply divided between the working class and the city planners, the son of the city's mastermind falls in love with a working class prophet who predicts the coming of a savior to mediate their differences",
-    //     //       }),
-    //     //     ])
-    //     //   )
-    Movie.bulkCreate([
-      {
+    Promise.all([
+      Movie.create({
         title: 'Apocalypse Now',
         yearOfRelease: 1979,
         synopsis:
           'A U.S. Army officer serving in Vietnam is tasked with assassinating a renegade Special Forces Colonel who sees himself as a god.',
-      },
-      {
+      }),
+      Movie.create({
         title: 'Blade Runner',
         yearOfRelease: 1982,
         synopsis:
           'A blade runner must pursue and terminate four replicants who stole a ship in space, and have returned to Earth to find their creator.',
-      },
-      {
+      }),
+      Movie.create({
         title: 'Metropolis',
         yearOfRelease: 1927,
         synopsis:
           "In a futuristic city sharply divided between the working class and the city planners, the son of the city's mastermind falls in love with a working class prophet who predicts the coming of a savior to mediate their differences",
-      },
+      }),
     ])
   )
-
-  //.then(result => console.log(result))
   .catch(err => {
     console.error('Unable to create tables', err);
-    // exit with failure code if not created
     process.exit(1);
   });
 
-// Express app, routing, RESTful actions set-up
-// All in same file so I don't need express router I think
-
+// Express app set-up
 const app = express();
 
 const jsonParser = bodyParser.json();
@@ -100,13 +70,10 @@ function onListen() {
 
 app.listen(port, onListen);
 
-// Read all movies
-
+// Read all movies action
 app.get('/movies', (request, response, next) => {
   Movie.findAll()
-    //.then(console.log(response.body))
     .then(movies => {
-      //console.log(movies);
       if (movies.length === 0) {
         return response.status(404).send({ message: 'Movies not found' });
       } else {
@@ -116,12 +83,10 @@ app.get('/movies', (request, response, next) => {
     .catch(error => next(error));
 });
 
-// Create a new movie resource
+// Create a new movie resource action
 app.post('/movies', (request, response) =>
-  //console.log('request', request.body)
   Movie.create(request.body)
     .then(result => {
-      //console.log('MOVIE CREATED', result.dataValues);
       return response.status(201).send(result);
     })
     .catch(error => {
@@ -135,12 +100,10 @@ app.post('/movies', (request, response) =>
     })
 );
 
-// Read a single movie resource
+// Read a single movie resource action
 app.get('/movies/:id', (request, response, next) => {
-  Movie.findByPk(request.params.id)
-    //.then(console.log('request.params.id', request.params.id))
+  Movie.findByPk(parseInt(request.params.id))
     .then(movie => {
-      //console.log(movie);
       if (!movie) {
         return response.status(404).send({ message: 'Movie not found' });
       } else {
@@ -150,7 +113,7 @@ app.get('/movies/:id', (request, response, next) => {
     .catch(error => next(error));
 });
 
-// Delete a single movie resource
+// Delete a single movie resource action
 app.delete('/movies/:id', (request, response, next) => {
   const idMovieToDelete = parseInt(request.params.id);
   Movie.destroy({
@@ -165,11 +128,10 @@ app.delete('/movies/:id', (request, response, next) => {
         response.send({ message: 'Movie successfully deleted' });
       }
     })
-    //.then(response.send({ message: 'Movie successfully deleted' }))
     .catch(error => next(error));
 });
 
-// Update a single movie resource
+// Update a single movie resource action
 app.put('/movies/:id', (request, response, next) => {
   Movie.findByPk(parseInt(request.params.id))
     .then(movie => {
