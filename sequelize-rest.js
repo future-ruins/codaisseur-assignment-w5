@@ -117,7 +117,7 @@ app.get('/movies', (request, response, next) => {
 });
 
 // Create a new movie resource
-app.post('/movies', (request, response, next) =>
+app.post('/movies', (request, response) =>
   //console.log('request', request.body)
   Movie.create(request.body)
     .then(result => {
@@ -136,3 +136,41 @@ app.post('/movies', (request, response, next) =>
 );
 
 // Read a single movie resource
+
+app.get('/movies/:id', (request, response, next) => {
+  Movie.findByPk(request.params.id)
+    //.then(console.log('request.params.id', request.params.id))
+    .then(movie => {
+      //console.log(movie);
+      if (!movie) {
+        return response.status(404).send({ message: 'Movie not found' });
+      } else {
+        return response.send(movie);
+      }
+    })
+    .catch(next);
+});
+
+// Delete a single movie resource
+app.delete('/movies/:id', (request, response, next) => {
+  const idMovieToDelete = parseInt(request.params.id);
+  Movie.destroy({
+    where: {
+      id: idMovieToDelete,
+    },
+  })
+    .then(numdeleted => {
+      // destory will retrun the number of deleted records
+      console.log('numdeleted:', numdeleted);
+      if (numdeleted === 0) {
+        // if we didn't destroy one it didn't exist
+        response.status(404).end();
+      } else {
+        response.status(204).end(); // successfully deleted
+      }
+    })
+    //.then(response.send({ message: 'Movie successfully deleted' }))
+    .catch(next);
+});
+
+// Update a single movie resource
