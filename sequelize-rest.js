@@ -47,7 +47,7 @@ db.sync({ force: false })
         title: 'Metropolis',
         yearOfRelease: 1927,
         synopsis:
-          "In a futuristic city sharply divided between the working class and the city planners, the son of the city's mastermind falls in love with a working class prophet who predicts the coming of a savior to mediate their differences",
+          'In a futuristic city sharply divided between the working class and the city planners, the son of the city mastermind falls in love with a working class prophet who predicts the coming of a savior to mediate their differences',
       }),
     ])
   )
