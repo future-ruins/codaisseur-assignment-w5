@@ -13,15 +13,21 @@ function onListen() {
 
 app.listen(port, onListen);
 
+let count = 0;
+function counter() {
+  count++;
+  console.log(count);
+}
+
 app.post("/messages", (request, response) => {
   console.log("body text:", request.body.text);
+  counter();
 
-  // implement
-  console.count();
-
-  if (!request.body.text || request.body.text === "") {
+  if (count > 5) {
+    return response.status(429).send("Too Many Requests");
+  } else if (!request.body.text || request.body.text === "") {
     return response.status(400).send("Bad Request");
   } else {
-    return response.send({ message: "Message received loud and clear" });
+    response.send({ message: "Message received loud and clear" });
   }
 });
