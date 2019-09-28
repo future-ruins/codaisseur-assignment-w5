@@ -4,6 +4,7 @@
 .AppleDouble
 .LSOverride
 .Trashes
+.vscode/
 
 # Dependency directories
 node_modules/
