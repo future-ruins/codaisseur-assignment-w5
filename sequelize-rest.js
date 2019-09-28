@@ -113,7 +113,7 @@ app.get('/movies', (request, response, next) => {
         return response.send(movies);
       }
     })
-    .catch(next);
+    .catch(error => next(error));
 });
 
 // Create a new movie resource
@@ -148,7 +148,7 @@ app.get('/movies/:id', (request, response, next) => {
         return response.send(movie);
       }
     })
-    .catch(next);
+    .catch(error => next(error));
 });
 
 // Delete a single movie resource
@@ -159,18 +159,15 @@ app.delete('/movies/:id', (request, response, next) => {
       id: idMovieToDelete,
     },
   })
-    .then(numdeleted => {
-      // destory will retrun the number of deleted records
-      console.log('numdeleted:', numdeleted);
-      if (numdeleted === 0) {
-        // if we didn't destroy one it didn't exist
+    .then(deletedItems => {
+      if (deletedItems === 0) {
         response.status(404).end();
       } else {
-        response.status(204).end(); // successfully deleted
+        response.send({ message: 'Movie successfully deleted' });
       }
     })
     //.then(response.send({ message: 'Movie successfully deleted' }))
-    .catch(next);
+    .catch(error => next(error));
 });
 
 // Update a single movie resource
